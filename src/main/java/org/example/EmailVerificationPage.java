@@ -29,9 +29,7 @@ public class EmailVerificationPage {
     }
 
     public String getVerificationCode(User user) throws Exception {
-        // Simulate waiting for email and extracting the verification code
-        Thread.sleep(20000);  // wait for email to be received
-
+        Thread.sleep(5000);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://privatix-temp-mail-v1.p.rapidapi.com/request/mail/id/" + user.getEmailHash() + "/"))
                 .header("x-rapidapi-key", "63fbf2eb60msh3ad63b25eb7a109p15cee0jsn782da0ed0c5a")

@@ -25,7 +25,7 @@ public class ZoomRegistrationTest {
     private User user;
 
     @BeforeTest
-    public void setUp() {
+    public void setUp() throws Exception {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("user-agent=Mozilla Chrome/ 125.0.6422.61");
@@ -33,7 +33,8 @@ public class ZoomRegistrationTest {
         wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         mainPage = new MainPage(driver);
         emailPage = new EmailPage(driver);
-        user = new User("", "", "", "", "");
+        UserFactory userFactory = new UserFactory();
+        user = userFactory.createUser();
     }
 
     @AfterTest
@@ -51,7 +52,7 @@ public class ZoomRegistrationTest {
     @Test(priority = 1)
     public void testEnterBirthYear() {
         mainPage.navigateTo("https://zoom.us/signup#/signup");
-        mainPage.enterBirthYear("2005");
+        mainPage.enterBirthYear(user.getBirthYear());
         mainPage.clickContinue();
         WebElement emailField = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("email")));
         Assert.assertNotNull(emailField, "Email field should be present after entering birth year");
@@ -59,7 +60,6 @@ public class ZoomRegistrationTest {
 
     @Test(priority = 2, dependsOnMethods = "testEnterBirthYear")
     public void testGetTemporaryEmail() throws Exception {
-        user = emailPage.getTemporaryEmail(user);
         Assert.assertNotNull(user.getEmail(), "Temporary email should be generated");
         Assert.assertNotNull(user.getEmailHash(), "Email hash should be generated");
         emailPage.inputEmailAndContinue(user);
@@ -76,13 +76,10 @@ public class ZoomRegistrationTest {
     public void fillRegistrationDetails() throws Exception {
         FinalPage finalPage = new FinalPage(driver, wait);
         finalPage.closeModalIfPresent();
-        user.setFirstName(finalPage.generateRandomString(8));
-        user.setLastName(finalPage.generateRandomString(12));
-        user.setPassword(finalPage.generateStrongPassword());
         finalPage.inputFirstName(user.getFirstName());
         finalPage.inputLastName(user.getLastName());
         finalPage.inputPassword(user.getPassword());
         finalPage.clickContinue();
-        Thread.sleep(1000); // For demonstration only, adjust as necessary.
+        Thread.sleep(1000);
     }
 }

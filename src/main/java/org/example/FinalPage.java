@@ -45,34 +45,4 @@ public class FinalPage {
         WebElement continueButton = driver.findElement(By.xpath("//span[contains(text(), 'Continue')]"));
         continueButton.click();
     }
-
-    public String generateRandomString(int length) {
-        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        SecureRandom random = new SecureRandom();
-        StringBuilder builder = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            builder.append(characters.charAt(random.nextInt(characters.length())));
-        }
-        return builder.toString();
-    }
-
-    public String generateStrongPassword() {
-        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String lower = upper.toLowerCase();
-        String numbers = "0123456789";
-        String specialChars = "!@#$%^&*";
-        String combinedChars = upper + lower + numbers + specialChars;
-
-        SecureRandom random = new SecureRandom();
-        StringBuilder password = new StringBuilder();
-        password.append(upper.charAt(random.nextInt(upper.length())));
-        password.append(lower.charAt(random.nextInt(lower.length())));
-        password.append(numbers.charAt(random.nextInt(numbers.length())));
-        password.append(specialChars.charAt(random.nextInt(specialChars.length())));
-
-        for (int i = 4; i < 12; i++) { // Generates a password of length 12
-            password.append(combinedChars.charAt(random.nextInt(combinedChars.length())));
-        }
-        return password.toString();
-    }
 }

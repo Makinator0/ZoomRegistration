@@ -22,9 +22,9 @@ public class MainPage {
         driver.get(url);
     }
 
-    public void enterBirthYear(String year) {
+    public void enterBirthYear(String birthYea) {
         WebElement yearField = wait.until(ExpectedConditions.elementToBeClickable(By.id("year")));
-        yearField.sendKeys(year);
+        yearField.sendKeys(birthYea);
     }
 
     public void clickContinue() {
