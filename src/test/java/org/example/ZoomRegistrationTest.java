@@ -20,12 +20,9 @@ import java.util.ArrayList;
 public class ZoomRegistrationTest {
     private WebDriver driver;
     private WebDriverWait wait;
-    private String tempEmail;
-    private String emailHash;
     private MainPage mainPage;
     private EmailPage emailPage;
-
-
+    private User user;
 
     @BeforeTest
     public void setUp() {
@@ -34,10 +31,9 @@ public class ZoomRegistrationTest {
         options.addArguments("user-agent=Mozilla Chrome/ 125.0.6422.61");
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-        mainPage = new MainPage(driver); // Initialize MainPage object
+        mainPage = new MainPage(driver);
         emailPage = new EmailPage(driver);
-
-
+        user = new User("", "", "", "", "");
     }
 
     @AfterTest
@@ -63,17 +59,16 @@ public class ZoomRegistrationTest {
 
     @Test(priority = 2, dependsOnMethods = "testEnterBirthYear")
     public void testGetTemporaryEmail() throws Exception {
-        tempEmail = emailPage.getTemporaryEmail();
-        emailHash = emailPage.getEmailHash();
-        Assert.assertNotNull(tempEmail, "Temporary email should be generated");
-        Assert.assertNotNull(emailHash, "Email hash should be generated");
-        emailPage.inputEmailAndContinue();
+        user = emailPage.getTemporaryEmail(user);
+        Assert.assertNotNull(user.getEmail(), "Temporary email should be generated");
+        Assert.assertNotNull(user.getEmailHash(), "Email hash should be generated");
+        emailPage.inputEmailAndContinue(user);
     }
 
     @Test(priority = 3, dependsOnMethods = "testGetTemporaryEmail")
     public void testRegisterOnZoom() throws Exception {
-        EmailVerificationPage emailVerificationPage = new EmailVerificationPage(driver, wait, emailHash);
-        String verificationCode = emailVerificationPage.getVerificationCode();
+        EmailVerificationPage emailVerificationPage = new EmailVerificationPage(driver, wait);
+        String verificationCode = emailVerificationPage.getVerificationCode(user);
         emailVerificationPage.enterVerificationCode(verificationCode);
     }
 
@@ -81,9 +76,12 @@ public class ZoomRegistrationTest {
     public void fillRegistrationDetails() throws Exception {
         FinalPage finalPage = new FinalPage(driver, wait);
         finalPage.closeModalIfPresent();
-        finalPage.inputFirstName(finalPage.generateRandomString(8));
-        finalPage.inputLastName(finalPage.generateRandomString(12));
-        finalPage.inputPassword(finalPage.generateStrongPassword());
+        user.setFirstName(finalPage.generateRandomString(8));
+        user.setLastName(finalPage.generateRandomString(12));
+        user.setPassword(finalPage.generateStrongPassword());
+        finalPage.inputFirstName(user.getFirstName());
+        finalPage.inputLastName(user.getLastName());
+        finalPage.inputPassword(user.getPassword());
         finalPage.clickContinue();
         Thread.sleep(1000); // For demonstration only, adjust as necessary.
     }

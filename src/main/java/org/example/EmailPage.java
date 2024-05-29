@@ -20,29 +20,25 @@ public class EmailPage {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private WebDriver driver;
     private WebDriverWait wait;
-    private String tempEmail;
-    private String emailHash;
 
     public EmailPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
-    public String getTemporaryEmail() throws Exception {
+    public User getTemporaryEmail(User user) throws Exception {
         String randomString = generateRandomString(7);
         String domain = getRandomDomain();
-        tempEmail = randomString.toLowerCase() + domain;
-        emailHash = DigestUtils.md5Hex(tempEmail);
-        return tempEmail;
+        String tempEmail = randomString.toLowerCase() + domain;
+        String emailHash = DigestUtils.md5Hex(tempEmail);
+        user.setEmail(tempEmail);
+        user.setEmailHash(emailHash);
+        return user;
     }
 
-    public String getEmailHash() {
-        return emailHash;
-    }
-
-    public void inputEmailAndContinue() throws InterruptedException {
+    public void inputEmailAndContinue(User user) throws InterruptedException {
         WebElement emailField = wait.until(ExpectedConditions.elementToBeClickable(By.id("email")));
-        emailField.sendKeys(tempEmail);
+        emailField.sendKeys(user.getEmail());
         Thread.sleep(1000);
         WebElement continueButton = driver.findElement(By.xpath("//span[contains(text(), 'Continue')]"));
         continueButton.click();
